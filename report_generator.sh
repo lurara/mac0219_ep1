@@ -1,8 +1,20 @@
-# export num threads for omp
-export OMP_NUM_THREADS=8
+# number of tests
+if [ "$#" -ne 3 ]; then
+    echo "por favor, digite os tres parâmetros nesta ordem:\n
+          ./report_generator <n_tests> <n_threads> <size>"
+    exit
+fi
+
+if [ $1 < 10 ]; then
+    echo -e "O número mínimo de testes é 10\n"
+    NUM_TESTS=10
+else
+    NUM_TESTS=$1
+fi
 
 # variables
-
+THREADS=$2
+SIZE=$3
 PTH="Reports"
 MAIN_RESULTS=general_results
 CMP_FILE=compilation_stats
@@ -10,7 +22,7 @@ EXE_FILE=execution_stats
 PROGRAM=mandelbrot
 
 ETC=(""
-     "8"
+     "$THREADS"
      ""
 )
 
@@ -29,18 +41,17 @@ INPUT_NAME=("Full_Picture"
        "Elephant_Valley"
        "Triple_Spiral_Valley")
 
-INPUT=("-2.5 1.5 -2.0 2.0 11500"
-       "-0.8 -0.7 0.05 0.15 11500"
-       "0.175 0.375 -0.1 0.1 11500"
-       "-0.188 -0.012 0.554 0.754 11500")
+INPUT=("-2.5 1.5 -2.0 2.0 $SIZE"
+       "-0.8 -0.7 0.05 0.15 $SIZE"
+       "0.175 0.375 -0.1 0.1 $SIZE"
+       "-0.188 -0.012 0.554 0.754 $SIZE"
+)
 
-# number of tests
-if [ "$#" -eq 0 ] || [ $1 < 10 ]; then
-    echo -e "O número mínimo de testes é 10\n"
-    NUM_TESTS=10
-else
-    NUM_TESTS=$1
-fi
+#init
+
+# export num threads for omp
+export OMP_NUM_THREADS=$THREADS
+       
 echo -e "\nRealizando" $NUM_TESTS "testes por input.\n\n"
 
 # verify if it is a new test
@@ -92,6 +103,8 @@ echo "Tempo de compilação gerado pelo comando: time" >> $MAIN_RESULTS
 echo "Estatísticas de execução geradas pelo comando: perf" >> $MAIN_RESULTS
 echo -e "\n" >> $MAIN_RESULTS
 
+echo -e "Numero de threads: $THREADS\n" >> $MAIN_RESULT
+
 echo -e '  ------------------------------------------------------------------------------------------\n' >> $MAIN_RESULTS
 
 echo -e '\t\t\t\t   ESTATÍSTICAS\n' >> $MAIN_RESULTS
@@ -113,7 +126,7 @@ while [ $i != ${#VERSION[@]} ]; do
     while [ $j != ${#INPUT[@]} ]; do
 	mkdir $PTH/${VERSION[$i]}/${INPUT_NAME[$j]}
         echo "INPUT: "${INPUT_NAME[$j]} >> $MAIN_RESULTS
-        perf stat --append -o $MAIN_RESULTS -e cpu-cycles,instructions,cache-misses,cache-references,page-faults -r $NUM_TESTS ./"$PROGRAM"_"${SFX[$i]}" ${INPUT[$j]} ${ETC[$i]} >> $PTH/${VERSION[$i]}/${INPUT_NAME[$j]}/$EXE_FILE
+        perf stat --append -o $MAIN_RESULTS -e cpu-cycles,instructions,cache-misses,cache-references,page-faults -r $NUM_TESTS --table ./"$PROGRAM"_"${SFX[$i]}" ${INPUT[$j]} ${ETC[$i]} >> $PTH/${VERSION[$i]}/${INPUT_NAME[$j]}/$EXE_FILE
         echo "" >> $MAIN_RESULTS
         mv output.ppm $PTH/${VERSION[$i]}/${INPUT_NAME[$j]}/.
 	let "j=j+1"
