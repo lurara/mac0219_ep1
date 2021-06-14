@@ -1,0 +1,381 @@
+Sistema Operacional
+Description:	Debian GNU/Linux 10 (buster)
+
+Processador
+model name	: Intel(R) Xeon(R) CPU E5-2670 0 @ 2.60GHz
+
+RAM
+MemTotal:       65899696 kB
+
+Compilador: gcc
+Tempo de compilação gerado pelo comando: time
+Estatísticas de execução geradas pelo comando: perf
+
+
+  ------------------------------------------------------------------------------------------
+
+				   ESTATÍSTICAS
+
+Versão:  Sequencial 
+
+Compilation time: 0.06 User time (seconds)
+
+Binary file size (bytes): 18048
+
+
+INPUT: Full_Picture
+# started on Sat Jun 12 10:30:36 2021
+
+
+ Performance counter stats for './mandelbrot_seq -2.5 1.5 -2.0 2.0 4096' (10 runs):
+
+    14,480,388,108      cpu-cycles                                                    ( +-  0.10% )
+    21,106,968,099      instructions              #    1.46  insn per cycle                                              ( +-  0.01% )
+        14,640,827      cache-misses              #   80.069 % of all cache refs      ( +-  0.29% )
+        18,285,330      cache-references                                              ( +-  0.58% )
+           131,798      page-faults                                                   ( +-  0.00% )
+
+            # Table of individual measurements:
+            5.5523 (-0.0772) #
+            5.7274 (+0.0979) #
+            5.7407 (+0.1112) #
+            5.7779 (+0.1483) #
+            5.5481 (-0.0814) #
+            6.0108 (+0.3813) ##
+            5.3142 (-0.3153) ##
+            5.4270 (-0.2025) #
+            5.4542 (-0.1754) #
+            5.7428 (+0.1133) #
+
+            # Final result:
+            5.6295 +- 0.0655 seconds time elapsed  ( +-  1.16% )
+
+
+INPUT: Seahorse_Valley
+# started on Sat Jun 12 10:31:33 2021
+
+
+ Performance counter stats for './mandelbrot_seq -0.8 -0.7 0.05 0.15 4096' (10 runs):
+
+    74,617,345,997      cpu-cycles                                                    ( +-  0.02% )
+    83,870,722,601      instructions              #    1.12  insn per cycle                                              ( +-  0.00% )
+        15,032,568      cache-misses              #   79.667 % of all cache refs      ( +-  0.11% )
+        18,869,305      cache-references                                              ( +-  0.42% )
+           131,823      page-faults                                                   ( +-  0.00% )
+
+            # Table of individual measurements:
+            23.471 (-0.282) #
+            23.627 (-0.127) #
+            23.808 (+0.055) #
+            23.620 (-0.134) #
+            23.465 (-0.289) #
+            23.409 (-0.344) #
+            24.535 (+0.781) #
+            23.857 (+0.103) #
+            23.792 (+0.038) #
+            23.952 (+0.198) #
+
+            # Final result:
+            23.754 +- 0.104 seconds time elapsed  ( +-  0.44% )
+
+
+INPUT: Elephant_Valley
+# started on Sat Jun 12 10:35:31 2021
+
+
+ Performance counter stats for './mandelbrot_seq 0.175 0.375 -0.1 0.1 4096' (10 runs):
+
+    70,740,601,294      cpu-cycles                                                    ( +-  0.03% )
+    79,837,455,748      instructions              #    1.13  insn per cycle                                              ( +-  0.00% )
+        15,018,329      cache-misses              #   79.916 % of all cache refs      ( +-  0.20% )
+        18,792,635      cache-references                                              ( +-  0.63% )
+           131,830      page-faults                                                   ( +-  0.00% )
+
+           # Table of individual measurements:
+           22.5207 (-0.1419) #
+           22.5983 (-0.0643) #
+           22.4728 (-0.1897) #
+           22.3004 (-0.3622) #
+           22.5211 (-0.1414) #
+           22.5094 (-0.1532) #
+           23.1015 (+0.4389) #
+           22.8169 (+0.1543) #
+           23.2083 (+0.5458) #
+           22.5763 (-0.0863) #
+
+           # Final result:
+           22.6626 +- 0.0917 seconds time elapsed  ( +-  0.40% )
+
+
+INPUT: Triple_Spiral_Valley
+# started on Sat Jun 12 10:39:18 2021
+
+
+ Performance counter stats for './mandelbrot_seq -0.188 -0.012 0.554 0.754 4096' (10 runs):
+
+    84,339,962,545      cpu-cycles                                                    ( +-  0.01% )
+    94,053,631,515      instructions              #    1.12  insn per cycle                                              ( +-  0.00% )
+        15,040,440      cache-misses              #   80.148 % of all cache refs      ( +-  0.23% )
+        18,765,863      cache-references                                              ( +-  0.37% )
+           131,842      page-faults                                                   ( +-  0.00% )
+
+            # Table of individual measurements:
+            26.506 (-0.222) #
+            27.068 (+0.340) #
+            26.925 (+0.197) #
+            26.370 (-0.359) #
+            26.810 (+0.081) #
+            27.018 (+0.289) #
+            27.217 (+0.488) #
+            26.388 (-0.341) #
+            26.604 (-0.124) #
+            26.380 (-0.349) #
+
+            # Final result:
+            26.729 +- 0.101 seconds time elapsed  ( +-  0.38% )
+
+
+
+
+Versão:  Pthreads 
+
+Compilation time: 0.04 User time (seconds)
+
+Binary file size (bytes): 18168
+
+
+INPUT: Full_Picture
+# started on Sat Jun 12 10:43:47 2021
+
+
+ Performance counter stats for './mandelbrot_pth -2.5 1.5 -2.0 2.0 4096 32' (10 runs):
+
+    15,198,064,167      cpu-cycles                                                    ( +-  0.19% )
+    19,175,404,619      instructions              #    1.26  insn per cycle                                              ( +-  0.04% )
+        14,168,523      cache-misses              #   84.723 % of all cache refs      ( +-  1.07% )
+        16,723,403      cache-references                                              ( +-  1.85% )
+           132,968      page-faults                                                   ( +-  0.87% )
+
+            # Table of individual measurements:
+            2.8402 (-0.2053) ##
+            3.1320 (+0.0865) #
+            3.2781 (+0.2326) ##
+            2.7788 (-0.2667) ##
+            3.3056 (+0.2602) ##
+            3.4075 (+0.3621) ###
+            2.9860 (-0.0595) #
+            2.6847 (-0.3607) ###
+            2.8830 (-0.1625) ##
+            3.1588 (+0.1133) #
+
+            # Final result:
+            3.0455 +- 0.0779 seconds time elapsed  ( +-  2.56% )
+
+
+INPUT: Seahorse_Valley
+# started on Sat Jun 12 10:44:18 2021
+
+
+ Performance counter stats for './mandelbrot_pth -0.8 -0.7 0.05 0.15 4096 32' (10 runs):
+
+    91,340,941,039      cpu-cycles                                                    ( +-  0.11% )
+    82,053,706,132      instructions              #    0.90  insn per cycle                                              ( +-  0.02% )
+        17,779,931      cache-misses              #   80.155 % of all cache refs      ( +-  1.71% )
+        22,182,070      cache-references                                              ( +-  2.73% )
+           197,617      page-faults                                                   ( +-  0.02% )
+
+            # Table of individual measurements:
+            4.0051 (+0.1431) #
+            3.8511 (-0.0109) #
+            3.5378 (-0.3242) ##
+            4.1638 (+0.3019) ##
+            3.9523 (+0.0903) #
+            3.6792 (-0.1828) #
+            4.1572 (+0.2953) ##
+            3.8539 (-0.0081) #
+            3.6278 (-0.2341) ##
+            3.7914 (-0.0706) #
+
+            # Final result:
+            3.8620 +- 0.0671 seconds time elapsed  ( +-  1.74% )
+
+
+INPUT: Elephant_Valley
+# started on Sat Jun 12 10:44:59 2021
+
+
+ Performance counter stats for './mandelbrot_pth 0.175 0.375 -0.1 0.1 4096 32' (10 runs):
+
+    86,281,710,141      cpu-cycles                                                    ( +-  0.11% )
+    77,951,832,992      instructions              #    0.90  insn per cycle                                              ( +-  0.01% )
+        16,488,170      cache-misses              #   83.945 % of all cache refs      ( +-  0.83% )
+        19,641,738      cache-references                                              ( +-  1.26% )
+           197,704      page-faults                                                   ( +-  0.02% )
+
+            # Table of individual measurements:
+            3.4700 (-0.1621) #
+            3.4847 (-0.1473) #
+            3.7251 (+0.0930) #
+            3.8739 (+0.2419) ##
+            3.9219 (+0.2899) ##
+            3.2108 (-0.4213) ###
+            3.9822 (+0.3501) ##
+            3.5146 (-0.1174) #
+            3.4512 (-0.1808) ##
+            3.6860 (+0.0539) #
+
+            # Final result:
+            3.6320 +- 0.0781 seconds time elapsed  ( +-  2.15% )
+
+
+INPUT: Triple_Spiral_Valley
+# started on Sat Jun 12 10:45:36 2021
+
+
+ Performance counter stats for './mandelbrot_pth -0.188 -0.012 0.554 0.754 4096 32' (10 runs):
+
+   104,737,197,761      cpu-cycles                                                    ( +-  0.17% )
+    92,329,462,340      instructions              #    0.88  insn per cycle                                              ( +-  0.05% )
+        19,207,808      cache-misses              #   77.125 % of all cache refs      ( +-  3.38% )
+        24,904,935      cache-references                                              ( +-  4.78% )
+           200,133      page-faults                                                   ( +-  1.23% )
+
+            # Table of individual measurements:
+            3.8338 (-0.1544) #
+            3.9902 (+0.0019) #
+            3.7094 (-0.2789) ##
+            4.2123 (+0.2240) ##
+            3.7729 (-0.2154) ##
+            4.4517 (+0.4634) ###
+            4.0304 (+0.0421) #
+            4.0504 (+0.0621) #
+            4.1058 (+0.1175) #
+            3.7259 (-0.2623) ##
+
+            # Final result:
+            3.9883 +- 0.0746 seconds time elapsed  ( +-  1.87% )
+
+
+
+
+Versão:  OpenMP 
+
+Compilation time: 0.06 User time (seconds)
+
+Binary file size (bytes): 18432
+
+
+INPUT: Full_Picture
+# started on Sat Jun 12 10:46:17 2021
+
+
+ Performance counter stats for './mandelbrot_omp -2.5 1.5 -2.0 2.0 4096' (10 runs):
+
+    16,023,132,406      cpu-cycles                                                    ( +-  0.33% )
+    19,093,760,129      instructions              #    1.19  insn per cycle                                              ( +-  0.11% )
+        14,330,404      cache-misses              #   84.542 % of all cache refs      ( +-  1.36% )
+        16,950,586      cache-references                                              ( +-  1.44% )
+           147,943      page-faults                                                   ( +-  8.87% )
+
+             # Table of individual measurements:
+             2.860 (-0.233) ##
+             2.914 (-0.179) ##
+             2.928 (-0.165) ##
+             2.624 (-0.469) ####
+             3.763 (+0.670) ####
+             3.118 (+0.025) #
+             3.062 (-0.031) #
+             3.190 (+0.097) #
+             2.954 (-0.140) #
+             3.519 (+0.426) ###
+
+             # Final result:
+             3.093 +- 0.105 seconds time elapsed  ( +-  3.40% )
+
+
+INPUT: Seahorse_Valley
+# started on Sat Jun 12 10:46:48 2021
+
+
+ Performance counter stats for './mandelbrot_omp -0.8 -0.7 0.05 0.15 4096' (10 runs):
+
+    91,817,021,230      cpu-cycles                                                    ( +-  0.11% )
+    79,713,827,925      instructions              #    0.87  insn per cycle                                              ( +-  0.04% )
+        18,519,885      cache-misses              #   79.437 % of all cache refs      ( +-  2.11% )
+        23,313,822      cache-references                                              ( +-  3.42% )
+           239,122      page-faults                                                   ( +-  3.69% )
+
+             # Table of individual measurements:
+             3.857 (+0.037) #
+             3.839 (+0.019) #
+             3.490 (-0.330) ##
+             4.444 (+0.624) ###
+             4.079 (+0.259) ##
+             3.325 (-0.495) ###
+             3.611 (-0.209) ##
+             4.112 (+0.292) ##
+             3.634 (-0.185) ##
+             3.807 (-0.013) #
+
+             # Final result:
+             3.820 +- 0.104 seconds time elapsed  ( +-  2.73% )
+
+
+INPUT: Elephant_Valley
+# started on Sat Jun 12 10:47:28 2021
+
+
+ Performance counter stats for './mandelbrot_omp 0.175 0.375 -0.1 0.1 4096' (10 runs):
+
+    87,068,616,466      cpu-cycles                                                    ( +-  0.17% )
+    75,910,347,321      instructions              #    0.87  insn per cycle                                              ( +-  0.12% )
+        19,398,892      cache-misses              #   77.092 % of all cache refs      ( +-  6.15% )
+        25,163,210      cache-references                                              ( +-  8.84% )
+           215,781      page-faults                                                   ( +-  3.86% )
+
+             # Table of individual measurements:
+             3.576 (-0.370) ###
+             3.598 (-0.348) ##
+             4.644 (+0.698) ####
+             3.850 (-0.096) #
+             4.090 (+0.144) #
+             3.942 (-0.004) #
+             3.785 (-0.161) #
+             4.355 (+0.409) ##
+             3.802 (-0.144) #
+             3.819 (-0.127) #
+
+             # Final result:
+             3.946 +- 0.106 seconds time elapsed  ( +-  2.68% )
+
+
+INPUT: Triple_Spiral_Valley
+# started on Sat Jun 12 10:48:09 2021
+
+
+ Performance counter stats for './mandelbrot_omp -0.188 -0.012 0.554 0.754 4096' (10 runs):
+
+   104,760,256,051      cpu-cycles                                                    ( +-  0.17% )
+    89,577,097,280      instructions              #    0.86  insn per cycle                                              ( +-  0.07% )
+        19,594,058      cache-misses              #   77.087 % of all cache refs      ( +-  4.39% )
+        25,418,081      cache-references                                              ( +-  6.36% )
+           230,173      page-faults                                                   ( +-  4.40% )
+
+             # Table of individual measurements:
+             4.446 (+0.479) ###
+             3.636 (-0.331) ##
+             3.412 (-0.555) ####
+             4.613 (+0.646) ###
+             3.645 (-0.322) ##
+             3.678 (-0.289) ##
+             3.879 (-0.088) #
+             4.767 (+0.800) ####
+             3.671 (-0.296) ##
+             3.924 (-0.043) #
+
+             # Final result:
+             3.967 +- 0.149 seconds time elapsed  ( +-  3.75% )
+
+
+
+
