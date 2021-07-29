@@ -176,6 +176,7 @@ void compute_mandelbrot(){
                 z_y_squared = z_y * z_y;
             };
             iterations[conta] = iteration;
+            //printf("thread: count.. %d e iteration... %d\n", conta, iteration);
             conta++;
         };
     };

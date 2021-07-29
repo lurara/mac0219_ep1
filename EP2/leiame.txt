@@ -1,0 +1,11 @@
+A ideia da implementação é calcular as partes a partir dos processos e threads. Cada processo recebe, no início do programa,
+uma parte para computar. Essa parte será processada por N threads, N sendo o número de threads passado para o programa. No 
+final da execução, passa-se o argumento "all_iterations" para a thread principal.
+
+2 problemas:
+- threads não são sequenciais, vou ter que checar a ordem que estão mandando
+- o root tbm manda para si mesmo
+- tem que calcular a "sobra" se tiver faltando
+(
+            i_y_max = (meu_rank == np-1) ? image_size : (meu_rank+1) * image_size/(np - 1);
+)

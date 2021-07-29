@@ -28,9 +28,13 @@ int i_x_max;
 int i_y_ini;
 int i_y_max;
 int image_buffer_size;
+int worker_size;
 
 int meu_rank;
 int np;
+
+int i_start_y;
+int i_end_y;
 
 int gradient_size = 16;
 int colors[17][3] = {
@@ -55,6 +59,7 @@ int colors[17][3] = {
 
 int n_threads;
 pthread_t threads[MAX];
+pthread_mutex_t mutex; // mutex para computação das iterações
 
 int* iterations;
 int * all_iterations;
@@ -63,6 +68,7 @@ typedef struct {
 
     int y_ini;
     int y_max;
+    int p_idx;
 
 }Args;
 
@@ -70,15 +76,19 @@ void allocate_image_buffer () {
 
     int rgb_size = 3;
 
-    image_buffer = (unsigned char **) malloc(sizeof(unsigned char *) * image_buffer_size);
+    if(meu_rank == 0) {
 
-    for (int i = 0; i < image_buffer_size; i++){
-        image_buffer[i] = (unsigned char *) malloc(sizeof(unsigned char) * rgb_size);
+        image_buffer = (unsigned char **) malloc(sizeof(unsigned char *) * image_buffer_size);
+
+        for (int i = 0; i < image_buffer_size; i++){
+            image_buffer[i] = (unsigned char *) malloc(sizeof(unsigned char) * rgb_size);
+        }
+        
+        all_iterations = (int *) malloc(sizeof (int) * image_buffer_size);
     }
 
-    iterations = (int *) malloc (sizeof (int ) * image_buffer_size);
-    all_iterations = (int *) malloc(sizeof (int) * image_buffer_size);
-    
+    //iterations = (int *) malloc (sizeof (int ) * image_buffer_size);
+    iterations = (int *) malloc (sizeof (int) * worker_size);
 };
 
 void init(int argc, char *argv[]){
@@ -110,24 +120,42 @@ void init(int argc, char *argv[]){
         
 
         i_x_max           = image_size;
+        i_y_max           = image_size;
 
         pixel_width       = (c_x_max - c_x_min) / i_x_max;
         pixel_height      = (c_y_max - c_y_min) / i_y_max;
 
+        image_buffer_size = image_size * image_size;  // added
+
+        i_end_y = (meu_rank+1) * image_size/np;
+        i_start_y = (meu_rank) * image_size/np;
+
+        worker_size = image_buffer_size/np;
+        printf("Processo %d, de %d a %d\n", meu_rank, i_start_y, i_end_y);
+
+
+        pthread_mutex_init(&mutex, NULL);
+
+        /*
         if (meu_rank == 0) {
 
             i_y_ini = 0;
             i_y_max = image_size;
 
-            image_buffer_size = image_size * image_size;
+            //image_buffer_size = image_size * image_size; // comentado
         }
         else {
-
-            i_y_ini = (meu_rank-1) * image_size/(np - 1);
-            i_y_max = (meu_rank == np-1) ? image_size : (meu_rank) * image_size/(np - 1);
-
-            image_buffer_size = (meu_rank == np-1) ? image_size % (np - 1) : image_size/(np - 1);
-        }
+            
+            i_y_ini = (meu_rank) * image_size/np;
+            i_y_max = (meu_rank+1) * image_size/np;
+            //i_y_max = (meu_rank == np-1) ? image_size : (meu_rank+1) * image_size/(np - 1);
+            // vou ter que fazer um cálculo muito doido no último aparentemente
+            
+            //image_buffer_size = (meu_rank == np-1) ? image_size % (np - 1) : image_size/(np - 1);
+            //worker_size = (meu_rank == np-1) ? (image_size/(np - 1) + image_size%(np - 1)) : image_size/(np - 1);
+            worker_size = image_buffer_size/np;
+            printf("Processo %d com tamanho %d\n", meu_rank, worker_size);
+        }*/
         
     };
 };
@@ -157,7 +185,7 @@ void update_rgb_buffer(int iteration, int x, int y){
 
 void write_to_file(){
     FILE * file;
-    char * filename               = "output.ppm";
+    char * filename               = "gato.ppm";
     char * comment                = "# ";
 
     int max_color_component_value = 255;
@@ -176,9 +204,10 @@ void write_to_file(){
 
 void* part_compute (void* args) {
 
-    Args* arg = (Args*) args;
+    Args * arg = args;
     int y_ini = arg->y_ini;
     int y_max = arg->y_max;
+    int idx = arg->p_idx;
 
     printf("%d no part compute -> de %d a %d\n", meu_rank, y_ini, y_max);
 
@@ -195,7 +224,8 @@ void* part_compute (void* args) {
     double c_x;
     double c_y;
 
-    int count = 0;
+    //int count = 0;
+    int count = idx;
 
     for(i_y = y_ini; i_y < y_max; i_y++) {
 
@@ -225,13 +255,19 @@ void* part_compute (void* args) {
                 z_y_squared = z_y * z_y;
             }
 
+            pthread_mutex_lock(&mutex);
+
+            //if(i_x == i_x_max-1 && i_y == y_max-1 || i_y == 3211 && i_x == 2320)
+            //printf("thread: count.. %d e iteration... %d\n", count, iteration);
+
             iterations[count++] = iteration;
+            pthread_mutex_unlock(&mutex);
 
         }
 
     }
 
-    printf("%d saiu do part compute -> de %d a %d\n", meu_rank, y_ini, y_max);
+    printf("%d saiu do part compute -> de %d a %d, com tam %d\n", meu_rank, y_ini, y_max,count);
 
     pthread_exit(0);
 
@@ -239,23 +275,29 @@ void* part_compute (void* args) {
 
 void compute_mandelbrot() {
 
-    int size = (i_y_max - i_y_ini)/n_threads;
-
+    int size = (i_end_y - i_start_y)/n_threads;
+    
     printf ("%d no compute geral: %d\n", meu_rank, size);
+    //Args* args = malloc(sizeof(Args));
+	//t_struct * str = malloc(sizeof(t_struct)*threads);
+    Args * args = malloc(sizeof(Args)*n_threads);
+
+    for(int i = 0; i < n_threads; i++) {
+        args[i].y_ini = i_start_y + i*size;
+        args[i].y_max = ((i_start_y + (i+1)*size) > i_end_y) ? i_end_y : (i_start_y + (i+1)*size);
+        args[i].p_idx = i*(worker_size/n_threads);
+    }
 
     for (int i = 0; i < n_threads; i++) {
-
-        Args* args = malloc(sizeof(Args));
-        args->y_ini = i*size;
-        args->y_max = ((i+1)*size > i_y_max) ? i_y_max : (i+1)*size;
-        pthread_create(&threads[i], NULL, part_compute, (void*) args);
-
+        pthread_create(&threads[i], NULL, part_compute, (void*) &args[i]);
     }
 
     for (int i = 0; i < n_threads; i++)
         pthread_join(threads[i], NULL);
 
     printf ("%d saiu do compute \n", meu_rank);
+
+    free(args);
 
 };
 
@@ -275,16 +317,22 @@ int main(int argc, char *argv[]){
     allocate_image_buffer();
 
     printf ("%d antes do compute\n", meu_rank);
-    printf ("%d -> de %d a %d \n", meu_rank, i_y_ini, i_y_max);
+    //printf ("%d -> de %d a %d \n", meu_rank, i_y_ini, i_y_max);
 
-    if (meu_rank != 0)
-        compute_mandelbrot();
+    //if (meu_rank != 0)
+    compute_mandelbrot();
+
+    /* Cada processo, incluindo o raiz, 
+     * manda uma mensagem para o processo raiz, que ao 
+     * recebê-la, armazena-as na ordem de chegada. */
 
     printf ("%d chegou no gather\n", meu_rank);
+    
+    /*recv e senv?*/
 
 //    MPI_Gather(image_buffer, image_buffer_size, MPI_INT, image_buffer, image_buffer_size/(np - 1), MPI_INT, 0, MPI_COMM_WORLD);
 
-    MPI_Gather(iterations, image_buffer_size/(np-1), MPI_INT, all_iterations, image_buffer_size/(np - 1), MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Gather(iterations, image_buffer_size/np, MPI_INT, all_iterations, image_buffer_size/np, MPI_INT, 0, MPI_COMM_WORLD);
 
     printf ("%d passou do gather\n", meu_rank);
 
@@ -301,8 +349,6 @@ int main(int argc, char *argv[]){
         write_to_file();
 
     }
-
-    
 
     MPI_Finalize();
 
