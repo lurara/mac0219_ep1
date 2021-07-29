@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <pthread.h>
-#include <mpi.h>
+#include "mpi.h"
+#include <time.h>
+#include <sys/time.h>
 
-#define _POSIX_C_SOURCE 199309L
+// #define _POSIX_C_SOURCE 199309L
 
 #define MAX 100
 #define TAG 19
@@ -93,22 +95,34 @@ void allocate_image_buffer () {
 
 void init(int argc, char *argv[]){
 
-    if(argc < 7){
-        printf("usage: ./mandelbrot_pth c_x_min c_x_max c_y_min c_y_max image_size\n");
-        printf("examples with image_size = 11500:\n");
-        printf("    Full Picture:         ./mandelbrot_pth -2.5 1.5 -2.0 2.0 11500 <n_threads>\n");
-        printf("    Seahorse Valley:      ./mandelbrot_pth -0.8 -0.7 0.05 0.15 11500 <n_threads>\n");
-        printf("    Elephant Valley:      ./mandelbrot_pth 0.175 0.375 -0.1 0.1 11500 <n_threads>\n");
-        printf("    Triple Spiral Valley: ./mandelbrot_pth -0.188 -0.012 0.554 0.754 11500 <n_threads>\n");
+    if(argc < 2){
+
+        printf("usage: ./mandelbrot_pth <n_threads>\n");
+
+        // printf("usage: ./mandelbrot_pth c_x_min c_x_max c_y_min c_y_max image_size\n");
+        // printf("examples with image_size = 11500:\n");
+        // printf("    Full Picture:         ./mandelbrot_pth -2.5 1.5 -2.0 2.0 11500 <n_threads>\n");
+        // printf("    Seahorse Valley:      ./mandelbrot_pth -0.8 -0.7 0.05 0.15 11500 <n_threads>\n");
+        // printf("    Elephant Valley:      ./mandelbrot_pth 0.175 0.375 -0.1 0.1 11500 <n_threads>\n");
+        // printf("    Triple Spiral Valley: ./mandelbrot_pth -0.188 -0.012 0.554 0.754 11500 <n_threads>\n");
         exit(0);
     }
     else{
-        sscanf(argv[1], "%lf", &c_x_min);
-        sscanf(argv[2], "%lf", &c_x_max);
-        sscanf(argv[3], "%lf", &c_y_min);
-        sscanf(argv[4], "%lf", &c_y_max);
-        sscanf(argv[5], "%d", &image_size);
-        sscanf(argv[6], "%d", &n_threads);
+
+        c_x_min = -0.188;
+        c_x_max = -0.012;
+        c_y_min = 0.554;
+        c_y_max = 0.754;
+        image_size = 4096;
+
+        sscanf(argv[1], "%d", &n_threads);
+
+        // sscanf(argv[1], "%lf", &c_x_min);
+        // sscanf(argv[2], "%lf", &c_x_max);
+        // sscanf(argv[3], "%lf", &c_y_min);
+        // sscanf(argv[4], "%lf", &c_y_max);
+        // sscanf(argv[5], "%d", &image_size);
+        // sscanf(argv[6], "%d", &n_threads);
 /*
         i_x_max           = image_size;
         i_y_max           = image_size;
@@ -131,7 +145,7 @@ void init(int argc, char *argv[]){
         i_start_y = (meu_rank) * image_size/np;
 
         worker_size = image_buffer_size/np;
-        printf("Processo %d, de %d a %d\n", meu_rank, i_start_y, i_end_y);
+        // printf("Processo %d, de %d a %d\n", meu_rank, i_start_y, i_end_y);
 
 
         pthread_mutex_init(&mutex, NULL);
@@ -209,7 +223,7 @@ void* part_compute (void* args) {
     int y_max = arg->y_max;
     int idx = arg->p_idx;
 
-    printf("%d no part compute -> de %d a %d\n", meu_rank, y_ini, y_max);
+    // printf("%d no part compute -> de %d a %d\n", meu_rank, y_ini, y_max);
 
     double z_x;
     double z_y;
@@ -267,7 +281,7 @@ void* part_compute (void* args) {
 
     }
 
-    printf("%d saiu do part compute -> de %d a %d, com tam %d\n", meu_rank, y_ini, y_max,count);
+    // printf("%d saiu do part compute -> de %d a %d, com tam %d\n", meu_rank, y_ini, y_max,count);
 
     pthread_exit(0);
 
@@ -277,7 +291,7 @@ void compute_mandelbrot() {
 
     int size = (i_end_y - i_start_y)/n_threads;
     
-    printf ("%d no compute geral: %d\n", meu_rank, size);
+    // printf ("%d no compute geral: %d\n", meu_rank, size);
     //Args* args = malloc(sizeof(Args));
 	//t_struct * str = malloc(sizeof(t_struct)*threads);
     Args * args = malloc(sizeof(Args)*n_threads);
@@ -295,13 +309,15 @@ void compute_mandelbrot() {
     for (int i = 0; i < n_threads; i++)
         pthread_join(threads[i], NULL);
 
-    printf ("%d saiu do compute \n", meu_rank);
+    // printf ("%d saiu do compute \n", meu_rank);
 
     free(args);
 
 };
 
 int main(int argc, char *argv[]){
+
+    struct timeval t_ini, t_end;
 
     // Iniciando o MPI:
     MPI_Init(&argc, &argv);
@@ -312,11 +328,15 @@ int main(int argc, char *argv[]){
     /* MPI_Comm_size: retorna o número de processos em um comunicador no seu segundo argumento */
     MPI_Comm_size(MPI_COMM_WORLD,&np);
 
+    if (meu_rank == 0) {
+        gettimeofday(&t_ini, NULL);
+    }
+
     init(argc, argv);
 
     allocate_image_buffer();
 
-    printf ("%d antes do compute\n", meu_rank);
+    // printf ("%d antes do compute\n", meu_rank);
     //printf ("%d -> de %d a %d \n", meu_rank, i_y_ini, i_y_max);
 
     //if (meu_rank != 0)
@@ -326,7 +346,7 @@ int main(int argc, char *argv[]){
      * manda uma mensagem para o processo raiz, que ao 
      * recebê-la, armazena-as na ordem de chegada. */
 
-    printf ("%d chegou no gather\n", meu_rank);
+    // printf ("%d chegou no gather\n", meu_rank);
     
     /*recv e senv?*/
 
@@ -334,7 +354,7 @@ int main(int argc, char *argv[]){
 
     MPI_Gather(iterations, image_buffer_size/np, MPI_INT, all_iterations, image_buffer_size/np, MPI_INT, 0, MPI_COMM_WORLD);
 
-    printf ("%d passou do gather\n", meu_rank);
+    // printf ("%d passou do gather\n", meu_rank);
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -348,6 +368,12 @@ int main(int argc, char *argv[]){
 
         write_to_file();
 
+    }
+
+    if (meu_rank == 0) {
+        gettimeofday(&t_end, NULL);
+        float res = t_end.tv_sec - t_ini.tv_sec + (float) (t_end.tv_usec - t_ini.tv_usec)/1000000;
+        fprintf (stdout, "%.5f", res);
     }
 
     MPI_Finalize();
