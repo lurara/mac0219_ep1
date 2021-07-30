@@ -2,6 +2,8 @@ import subprocess
 import csv
 from subprocess import PIPE
 
+
+
 def main():
     path_csv = input("Digite o nome do csv: ")
     repeticoes = input("Digite o numero de repeticoes: ")
@@ -12,13 +14,13 @@ def main():
     lists = []
     dif_thread = []
     dif_proc = []
-    path = "mpirun -np ./mandelbrot_mpi_pth"
+    path = "mpirun --oversubscribe -np ./mandelbrot_mpi_pth"
 
     # Envia
     for proc in n_proc:
         for thread in n_thread:
             output = path.split()
-            output.insert(2, str(proc))
+            output.insert(3, str(proc))
             output.append(str(thread))
             #print(output)
             for itr in range(int(repeticoes)):
