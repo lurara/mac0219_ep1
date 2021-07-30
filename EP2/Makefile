@@ -8,6 +8,8 @@ CC_OPT=-std=c11
 CC_OMP=-fopenmp
 CC_PTH=-pthread
 
+MPI_CC=mpicc
+
 .PHONY: seq
 seq: $(OUTPUT)_seq
 
@@ -18,7 +20,7 @@ $(OUTPUT)_seq: $(OUTPUT)_seq.c
 pth: $(OUTPUT)_pth
 	
 $(OUTPUT)_pth: $(OUTPUT)_pth.c
-	$(CC) -o -pthread $(OUTPUT)_pth $(CC_OPT) $(CC_PTH) $(OUTPUT)_pth.c
+	$(CC) -pthread -o $(OUTPUT)_pth $(CC_OPT) $(CC_PTH) $(OUTPUT)_pth.c
 
 .PHONY: omp
 omp: $(OUTPUT)_omp
@@ -26,15 +28,30 @@ omp: $(OUTPUT)_omp
 $(OUTPUT)_omp: $(OUTPUT)_omp.c
 	$(CC) -o $(OUTPUT)_omp $(CC_OPT) $(CC_OMP) $(OUTPUT)_omp.c
 
-.PHONY: mpi pth
-pth: $(OUTPUT)_mpi_pth
+# MPI 
+.PHONY: mpi
+mpi: $(OUTPUT)_mpi
+	
+$(OUTPUT)_mpi: $(OUTPUT)_mpi.c
+	$(MPI_CC) -o $(OUTPUT)_mpi $(OUTPUT)_mpi.c
+
+# MPI + OMP
+.PHONY: mpi_omp
+mpi_omp: $(OUTPUT)_mpi_omp
+	
+$(OUTPUT)_mpi_omp: $(OUTPUT)_mpi_omp.c
+	$(MPI_CC) -o $(OUTPUT)_mpi_omp $(OUTPUT)_mpi_omp.c
+
+# MPI + PTH
+.PHONY: mpi_pth
+mpi_pth: $(OUTPUT)_mpi_pth
 	
 $(OUTPUT)_mpi_pth: $(OUTPUT)_mpi_pth.c
-	$(CC) -o $(OUTPUT)_mpi_pth $(CC_OPT) $(CC_PTH) $(OUTPUT)_mpi_pth.c
+	$(MPI_CC) -pthread -o $(OUTPUT)_mpi_pth $(OUTPUT)_mpi_pth.c
 
 .PHONY: all
-all: $(OUTPUT)_omp $(OUTPUT)_pth $(OUTPUT)_seq 
+all: $(OUTPUT)_omp $(OUTPUT)_pth $(OUTPUT)_seq $(OUTPUT)_mpi_pth $(OUTPUT)_mpi_omp $(OUTPUT)_mpi
 
 .PHONY: clean
 clean:
-	rm $(OUTPUT)_omp $(OUTPUT)_pth $(OUTPUT)_seq *$(IMAGE)
+	rm $(OUTPUT)_omp $(OUTPUT)_pth $(OUTPUT)_mpi $(OUTPUT)_mpi_omp $(OUTPUT)_mpi_pth $(OUTPUT)_seq *$(IMAGE)

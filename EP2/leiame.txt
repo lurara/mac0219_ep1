@@ -1,0 +1,58 @@
+***** Para rodar o makefile: *****
+
+a) para compilar todos...
+
+    make all
+
+b) para compilar individualmente...
+
+1. SEQUENCIAL:
+
+    make mandelbrot_seq
+
+2. PTHREADS:
+
+    make mandelbrot_pth
+
+3. OPENMP: 
+
+    make mandelbrot_omp
+
+4. MPI:
+
+    make mandelbrot_mpi
+
+5. PTHREADS + MPI:
+
+    make mandelbrot_omp_mpi
+
+6. MPI + OPENMP:
+
+    make mandelbrot_omp
+
+
+***** Para rodar o programa: *****
+
+1. SEQUENCIAL:
+
+    ./mandelbrot_seq < parametros usuais >
+
+2. PTHREADS:
+
+    ./mandelbrot_pth < parametros usuais > <numero_threads>
+
+3. OPENMP: 
+
+    ./mandelbrot_omp < parametros usuais >
+
+4. MPI:
+
+    mpirun -np <numero_processos> ./mandelbrot_mpi < parametros usuais > <numero_threads>
+
+5. PTHREADS + MPI:
+
+    mpirun --oversubscribe -np <numero_processos> ./mandelbrot_mpi_pth < parametros usuais > <numero_threads>
+
+6. MPI + OPENMP:
+
+    mpirun --oversubscribe -np <numero_processos> ./mandelbrot_ompi_omp < parametros usuais > <numero_threads>

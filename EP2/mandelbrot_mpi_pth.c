@@ -97,41 +97,37 @@ void init(int argc, char *argv[]){
 
     if(argc < 2){
 
-        printf("usage: ./mandelbrot_pth <n_threads>\n");
+        if(meu_rank == 0) {
 
-        // printf("usage: ./mandelbrot_pth c_x_min c_x_max c_y_min c_y_max image_size\n");
-        // printf("examples with image_size = 11500:\n");
-        // printf("    Full Picture:         ./mandelbrot_pth -2.5 1.5 -2.0 2.0 11500 <n_threads>\n");
-        // printf("    Seahorse Valley:      ./mandelbrot_pth -0.8 -0.7 0.05 0.15 11500 <n_threads>\n");
-        // printf("    Elephant Valley:      ./mandelbrot_pth 0.175 0.375 -0.1 0.1 11500 <n_threads>\n");
-        // printf("    Triple Spiral Valley: ./mandelbrot_pth -0.188 -0.012 0.554 0.754 11500 <n_threads>\n");
+        printf("usage: ./mandelbrot_pth <n_threads>\n");
+        printf("usage: ./mandelbrot_pth c_x_min c_x_max c_y_min c_y_max image_size\n");
+        printf("examples with image_size = 11500:\n");
+        printf("    Full Picture:         ./mandelbrot_pth -2.5 1.5 -2.0 2.0 11500 <n_threads>\n");
+        printf("    Seahorse Valley:      ./mandelbrot_pth -0.8 -0.7 0.05 0.15 11500 <n_threads>\n");
+        printf("    Elephant Valley:      ./mandelbrot_pth 0.175 0.375 -0.1 0.1 11500 <n_threads>\n");
+        printf("    Triple Spiral Valley: ./mandelbrot_pth -0.188 -0.012 0.554 0.754 11500 <n_threads>\n");
+        }
+
+        MPI_Finalize();
+        
         exit(0);
     }
     else{
 
-        c_x_min = -0.188;
-        c_x_max = -0.012;
-        c_y_min = 0.554;
-        c_y_max = 0.754;
-        image_size = 4096;
+        //c_x_min = -0.188;
+        //c_x_max = -0.012;
+        //c_y_min = 0.554;
+        //c_y_max = 0.754;
+        //image_size = 4096;
 
-        sscanf(argv[1], "%d", &n_threads);
+        //sscanf(argv[1], "%d", &n_threads);
 
-        // sscanf(argv[1], "%lf", &c_x_min);
-        // sscanf(argv[2], "%lf", &c_x_max);
-        // sscanf(argv[3], "%lf", &c_y_min);
-        // sscanf(argv[4], "%lf", &c_y_max);
-        // sscanf(argv[5], "%d", &image_size);
-        // sscanf(argv[6], "%d", &n_threads);
-/*
-        i_x_max           = image_size;
-        i_y_max           = image_size;
-        image_buffer_size = image_size * image_size;
-
-        pixel_width       = (c_x_max - c_x_min) / i_x_max;
-        pixel_height      = (c_y_max - c_y_min) / i_y_max;
-*/
-        
+        sscanf(argv[1], "%lf", &c_x_min);
+        sscanf(argv[2], "%lf", &c_x_max);
+        sscanf(argv[3], "%lf", &c_y_min);
+        sscanf(argv[4], "%lf", &c_y_max);
+        sscanf(argv[5], "%d", &image_size);
+        sscanf(argv[6], "%d", &n_threads);
 
         i_x_max           = image_size;
         i_y_max           = image_size;
@@ -149,27 +145,6 @@ void init(int argc, char *argv[]){
 
 
         pthread_mutex_init(&mutex, NULL);
-
-        /*
-        if (meu_rank == 0) {
-
-            i_y_ini = 0;
-            i_y_max = image_size;
-
-            //image_buffer_size = image_size * image_size; // comentado
-        }
-        else {
-            
-            i_y_ini = (meu_rank) * image_size/np;
-            i_y_max = (meu_rank+1) * image_size/np;
-            //i_y_max = (meu_rank == np-1) ? image_size : (meu_rank+1) * image_size/(np - 1);
-            // vou ter que fazer um cálculo muito doido no último aparentemente
-            
-            //image_buffer_size = (meu_rank == np-1) ? image_size % (np - 1) : image_size/(np - 1);
-            //worker_size = (meu_rank == np-1) ? (image_size/(np - 1) + image_size%(np - 1)) : image_size/(np - 1);
-            worker_size = image_buffer_size/np;
-            printf("Processo %d com tamanho %d\n", meu_rank, worker_size);
-        }*/
         
     };
 };
@@ -199,7 +174,7 @@ void update_rgb_buffer(int iteration, int x, int y){
 
 void write_to_file(){
     FILE * file;
-    char * filename               = "gato.ppm";
+    char * filename               = "output.ppm";
     char * comment                = "# ";
 
     int max_color_component_value = 255;
@@ -369,6 +344,8 @@ int main(int argc, char *argv[]){
         write_to_file();
 
     }
+    
+    MPI_Finalize();
 
     if (meu_rank == 0) {
         gettimeofday(&t_end, NULL);
@@ -376,7 +353,7 @@ int main(int argc, char *argv[]){
         fprintf (stdout, "%.5f", res);
     }
 
-    MPI_Finalize();
+
 
     return 0;
 };

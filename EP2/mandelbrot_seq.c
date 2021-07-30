@@ -177,10 +177,10 @@ int main(int argc, char *argv[]){
         free(image_buffer[i]);
     free(image_buffer);
     time(&e);
-    printf("Tempo de execução total: %d\n", e - a);
-    printf("Tempo de processamento: %d\n", c - b);
-    printf("Tempo de alocação de memoria: %d e %d\n", b - a, e - d);
-    printf("Tempo de I/O: %d\n", d - c);
+    printf("Tempo de execução total: %ld\n", e - a);
+    printf("Tempo de processamento: %ld\n", c - b);
+    printf("Tempo de alocação de memoria: %ld e %ld\n", b - a, e - d);
+    printf("Tempo de I/O: %ld\n", d - c);
 
     return 0;
 };
